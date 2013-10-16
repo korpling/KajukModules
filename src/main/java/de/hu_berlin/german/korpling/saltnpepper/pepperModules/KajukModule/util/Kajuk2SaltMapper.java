@@ -10,61 +10,37 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.osgi.service.log.LogService;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.MAPPING_RESULT;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.exceptions.KajukImporterException;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.SaltProject;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpus;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SCorpusGraph;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sCorpusStructure.SDocument;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SMetaAnnotation;
 
 
 
-public class Kajuk2SaltMapper 
+public class Kajuk2SaltMapper extends PepperMapperImpl
 {
 	
 	public static final String UTF8_BOM = "\uFEFF";
 	
-	
-	private File corpusPath= null; 
-	
-	public File getCorpusPath() {
-		return corpusPath;
-	}
-	public void setCorpusPath(File corpusPath) {
-		this.corpusPath = corpusPath;
-	}
-	public Kajuk2SaltMapper()
-	{
-	}
-	public void start(SDocument sDocument)
-	{
-		sDocument.setSName(sDocument.getSName()+".xml");
-		SaltProject saltProject = SaltFactory.eINSTANCE.createSaltProject();
-
-		SCorpusGraph sCorpusGraph = SaltFactory.eINSTANCE.createSCorpusGraph();
-		saltProject.getSCorpusGraphs().add(sCorpusGraph);
+	/**
+	 * {@inheritDoc PepperMapper#setSDocument(SDocument)}
+	 * 
+	 * OVERRIDE THIS METHOD FOR CUSTOMIZED MAPPING.
+	 */
+	@Override
+	public MAPPING_RESULT mapSDocument() {	
+		getSDocument().setSName(getSDocument().getSName());
 		
-		SCorpus sCorpus = SaltFactory.eINSTANCE.createSCorpus();
-		sCorpus.setSName("KAJUK");
-		sCorpusGraph.addNode(sCorpus);
-		
-		SDocument sDoc = null;
-		
-		sDoc = SaltFactory.eINSTANCE.createSDocument();
-		sDoc.setSName(sDocument.getSName()+".xml");
-		
-		sCorpusGraph.addSDocument(sCorpus, sDoc);
-
-		
-		sDocument.setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
+		if (getSDocument().getSDocumentGraph()== null)
+			getSDocument().setSDocumentGraph(SaltFactory.eINSTANCE.createSDocumentGraph());
 		try
 		{
-			File file = new File(this.getCorpusPath().getAbsolutePath()+"/" + sDocument.getSName());
+			File file = new File(this.getResourceURI().toFileString());
 			SAXParser parser;
 			XMLReader xmlReader;
 			SAXParserFactory factory= SAXParserFactory.newInstance();
@@ -73,7 +49,7 @@ public class Kajuk2SaltMapper
 			{	
 				parser= factory.newSAXParser();
 				xmlReader = parser.getXMLReader();
-				xmlReader.setContentHandler(new KajukContentHandler(sDocument));
+				xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
 			}
 			catch(ParserConfigurationException e)
 			{
@@ -100,7 +76,7 @@ public class Kajuk2SaltMapper
 				{
 					parser= factory.newSAXParser();
 					xmlReader= parser.getXMLReader();
-					xmlReader.setContentHandler(new KajukContentHandler(sDocument));
+					xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
 					xmlReader.parse(file.getAbsolutePath());
 				}
 				catch (Exception e1) 
@@ -108,15 +84,12 @@ public class Kajuk2SaltMapper
 		             throw new KajukImporterException("Cannot load Kajuk from resource '"+file.getAbsolutePath()+"'.", e1);
 				}
 			}
-			
-			System.out.println("\nDEBUG\n"+sDocument.getSName()+"\n");
+			getLogService().log(LogService.LOG_DEBUG, "SDocument '"+ getSDocument().getSName()+"' processed");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+		return(MAPPING_RESULT.FINISHED);
 	}
-		
-		
-	
 }
