@@ -1,0 +1,927 @@
+package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util;
+
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAbstractAnnotation;
+
+public abstract class ConversionClass {
+
+	
+	public static void convert(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue)
+	{
+		if(attrName == null || attrValue == null)
+		{
+			if(elementName.equals("pb"))
+			{
+//				sAnno.setName("pb");
+//				sAnno.setValue("pb");
+				return;
+			}
+			/*
+			 * This part is for the line commentary
+			 * TODO: need a way to determine the current line and increment it
+			 */
+			else if(elementName.equals("line"))	 
+			{
+//				sAnno.setName("line");
+//				sAnno.setValue("line");
+				return;
+			}
+			else if(elementName.equals("lb"))
+			{
+				sAnno.setName("lb");
+				sAnno.setValue("lb");
+				return;
+			}
+			else if(elementName.equals("VOR"))
+			{
+				sAnno.setName("Vorfeld");
+				sAnno.setValue("VOR");
+				return;
+			}
+			else if(elementName.equals("praed"))
+			{
+				sAnno.setName("satzglied");
+				sAnno.setValue("praed");
+				return;
+			}
+			else if(elementName.equals("V"))
+			{
+				sAnno.setName("V");
+				sAnno.setValue("V");
+				return;
+			}
+			else if(elementName.equals("VV"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue("VV");
+				return;
+			}
+			else if(elementName.equals("VV"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue("VV");
+				return;
+			}	
+			else if(elementName.equals("subj"))
+			{
+				sAnno.setName("satzglied");
+				sAnno.setValue("subj");
+				return;
+			}
+			else if(elementName.equals("AcI"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("AD"))
+			{
+				sAnno.setName("J_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("ADJGr"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("ADV"))
+			{
+				sAnno.setName("satzglied");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("akk"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("AP"))
+			{
+				sAnno.setName("J_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("FOK"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("FV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("HMV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("HV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("J"))
+			{
+				sAnno.setName("J");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("KON"))
+			{
+				sAnno.setName("J_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("KOR"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("KV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("LASSEN"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("MV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("NGr"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("obj"))
+			{
+				sAnno.setName("satzglied");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("akk"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("obl"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("prae"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("obj"))
+			{
+				sAnno.setName("satzglied");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("PGr"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("Phras"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("RF"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("SUB"))
+			{
+				sAnno.setName("J_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("TUN"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("VFin"))
+			{
+				sAnno.setName("pos_ID");
+				sAnno.setValue("Fin");
+				return;
+			}
+			else if(elementName.equals("VP"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("doc"))
+			{
+				return;
+			}
+			else if(elementName.equals("PV"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("XX"))
+			{
+				sAnno.setName("X");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("KOR"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("Inf"))
+			{
+				sAnno.setName("pos_ID");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("IP"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue(elementName);
+				return;
+			}
+			else if(elementName.equals("newline"))
+			{
+				return;
+			}
+			else if(elementName.equals("newpage"))
+			{
+				return;
+			}
+			else
+			{
+				System.out.println("WARNING: Unknown tag without attributes ("+elementName+")");
+			}
+		}
+		else
+		{
+			if(elementName.equals("line"))
+			{
+//				if(attrName.equals("n"))
+//				{
+//					sAnno.setName("line_n");
+//					sAnno.setValue(attrValue);
+//					return;
+//				}
+//				else
+//					System.out.println("no handler for "+ elementName+"_"+attrName);
+				return;
+			}
+			else if(elementName.equals("doc"))
+			{
+//				if(attrName.equals("ID"))
+//				{
+//					sAnno.setName(attrName);
+//					sAnno.setValue(attrValue);
+//					return;
+//				}
+//				else 
+//					System.out.println("no handler for "+ elementName+"_"+attrName);
+				return;
+			}
+			else if(elementName.equals("pb"))
+			{
+//				if(attrName.equals("n"))
+//				{
+//					sAnno.setName("pb_n");
+//					sAnno.setValue(attrValue);
+//					return;
+//				}
+//				else 
+//					System.out.println("no handler for "+ elementName+"_"+attrName);
+				return;
+			}
+			else if(elementName.equals("lb"))
+			{
+				if(attrName.equals("n"))	
+				{
+					sAnno.setName(elementName+"_n");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName("type_lb");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDtype"))
+				{
+					sAnno.setName("ADDtype_lb");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("IR"))
+				{
+					sAnno.setName(attrName+"_lb");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDIR"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("EB"))
+				{
+					sAnno.setName("EB");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("AP"))
+			{
+				if(attrName.equals("type") && attrValue.equals("FOK"))
+				{
+					sAnno.setName("pos_KAJUK");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName(elementName+"_"+attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDtype"))
+				{
+					if(attrValue.equals("x"))
+					{
+						sAnno.setName("X");
+						sAnno.setValue("x");
+						return;
+					}
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("praed"))
+			{
+				if(attrName.equals("real"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName(elementName+"_"+attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("VOR"))
+			{
+				if(attrName.equals("real"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName(elementName+"_"+attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("SUB"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName("satzglied");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDIR"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("IR"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ID"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("norm"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDtype"))
+				{
+					if(attrValue.equals("x"))
+					{
+						sAnno.setName("X");
+						sAnno.setValue("x");
+						return;
+					}
+					sAnno.setName(attrValue);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("obj"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("V"))
+			{
+				if(attrName.equals("ID"))
+				{
+					sAnno.setName("pos_ID");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("KOR"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDtype"))
+				{
+					sAnno.setName("ADDtype");
+					sAnno.setValue("E");
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName("dir");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName("satzglied_type");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("FOK"))
+			{
+				if(attrName.equals("norm"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("KON"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else 
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("VV"))
+			{
+				sAnno.setName("pos_KAJUK");
+				sAnno.setValue("VV");
+				return;
+			}
+			else if(elementName.equals("VV"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue("VV");
+				return;
+			}	
+			else if(elementName.equals("subj"))
+			{
+				if(attrName.equals("real"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName("satzglied_type");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ADDtype"))
+				{
+					sAnno.setName(attrValue);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("HV"))
+			{
+				sAnno.setName("satzglied_type");
+				sAnno.setValue("HV");
+				return;
+			}
+			else if(elementName.equals("J"))
+			{
+				if(attrName.equals("ADDIR"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("EB"))
+				{
+					sAnno.setName("EB");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("norm"))
+				{
+					sAnno.setName("norm");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("ID"))
+				{
+					sAnno.setName("J_ID");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("IR"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("norm"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					if(attrValue.equals("x"))
+					{
+						sAnno.setName("X");
+						sAnno.setValue("x");
+						return;
+					}
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("XX"))
+			{
+				if(attrName.equals("ID"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+ elementName+"_"+attrName);
+			}
+			else if(elementName.equals("ADV"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("change"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("IP"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("newline"))
+			{
+				if(attrName.equals("n"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("newpage"))
+			{
+				if(attrName.equals("n"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("RF"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName("E");
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else if(attrName.equals("dir"))
+				{
+					sAnno.setName("dir");
+					sAnno.setValue(attrValue);
+					return;
+				}
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals(""))
+			{
+				if(attrName.equals("norm"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("Inf"))
+			{
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				if(attrName.equals("dir"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else if(elementName.equals("AD"))
+			{
+				if(attrName.equals("norm"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				if(attrName.equals("type"))
+				{
+					sAnno.setName(attrName);
+					sAnno.setValue(attrValue);
+					return;
+				}
+				else
+					System.out.println("no handler for "+elementName+"_"+attrName);
+			}
+			else
+			{
+				System.out.println("WARNING: Unknown tag with attributes ("+elementName+")");
+			}
+		}
+	}
+	
+	
+}

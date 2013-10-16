@@ -1,0 +1,78 @@
+0	NULL	Titel	KAJUK - Kasseler Junktionskorpus
+0	NULL	Jahr	1700-2000
+0	NULL	Projekt	http://www.uni-giessen.de/kajuk/index.htm
+0	NULL	Herausgeber	Prof. Dr. Vilmos Ágel (Universität Kassel) und Prof. Dr. Mathilde Hennig (Universität Gießen)  
+0	NULL	Ort	Gießen/Kassel
+0	NULL	Korpus	Das Kasseler Junktionskorpus ist im Rahmen des von Vilmos Ágel und Mathilde Hennig geleiteten DFG-Projekts “Explizite und elliptische Junktion in der Syntax des Neuhochdeutschen. Pilotprojekt zu einer Sprachstufengrammatik des Neuhochdeutschen” (2007-2009) entstanden. In diesem Projekt wurden in je vier Texten aus dem 17. und 19. Jahrhundert junktionsrelevante grammatische Merkmale annotiert, durch deren Kombination verschiedene Techniken der expliziten und elliptischen Junktion rekonstruiert werden können.
+1	NULL	Titel	Bauernleben im Zeitalter des Dreißigjährigen Krieges. Die Stausebacher Chronik des Caspar Preis 1636-1667
+1	NULL	Jahr	1636-1667
+1	NULL	Autor	N/A
+1	NULL	Erschienen in	Beiträge zur Hessischen Geschichte 13
+1	NULL	Herausgeber	Wilhelm A. Eckhardt und Helmut Klingelhöfer
+1	NULL	Verlag	Tratvetter & Fischer
+1	NULL	Ort	Marburg/Lahn
+1	NULL	Seitenabschnitt	S. 38-69 und 93-101
+1	NULL	bibl	Bauernleben I = (1636-67/1998): Bauernleben im Zeitalter des Dreißigjährigen Krieges. Die Stausebacher Chronik des Caspar Preis 1636-1667. Hg. v. Wilhelm A. Eckhardt und Helmut Klingelhöfer. Mit einer Einführung von Gerhard Menk. Trautvetter & Fischer Nachf.: Marburg/Lahn 1998 (Beiträge zur Hessischen Geschichte 13), S. 38-69 und 93-101.
+2	NULL	Titel	Wenn doch dies Elend ein Ende hätte”: ein Briefwechsel aus dem Deutsch-Französischen Krieg 1870/71
+2	NULL	Jahr	1871-72
+2	NULL	Autor	N/A
+2	NULL	Erschienen in	Selbstzeugnisse der Neuzeit 7
+2	NULL	Herausgeber	Isa Schikorsky
+2	NULL	Verlag	Böhlau
+2	NULL	Ort	Köln et al.
+2	NULL	Seitenabschnitt	S. 99-126
+2	NULL	bibl	Briefwechsel V = (1871-72/1999): “Wenn doch dies Elend ein Ende hätte”: ein Briefwechsel aus dem Deutsch-Französischen Krieg 1870/71. Hg. v. Isa Schikorsky. Köln et al.: Böhlau 1999 (Selbstzeugnisse der Neuzeit 7), S. 99-126.
+3	NULL	Titel	Kleines Biechlin von meinem gantzen Leben. Die Autobiographie eines Elsässer Kannengießers aus dem 17. Jahrhundert
+3	NULL	Jahr	1657
+3	NULL	Autor	Güntzer, Augustin
+3	NULL	Erschienen in	Selbstzeugnisse der Neuzeit 8
+3	NULL	Herausgeber	Fabian Brändle und Dominik Sieber
+3	NULL	Verlag	Böhlau
+3	NULL	Ort	Köln/Weimar
+3	NULL	Seitenabschnitt	S. 40v - 43v, 54r -63r, 63[a]r - 65v, 78r - 108r.
+3	NULL	bibl	Güntzer I = Güntzer, Augustin (1657/2002): Kleines Biechlin von meinem gantzen Leben. Die Autobiographie eines Elsässer Kannengießers aus dem 17. Jahrhundert. Hg. v. Fabian Brändle und Dominik Sieber. Köln/Weimar: Böhlau 2002 (Selbstzeugnisse der Neuzeit 8), S. 40v - 43v, 54r -63r, 63[a]r - 65v, 78r - 108r.
+4	NULL	Titel	Lamentatio intermissa I. Tagebucharchiv Emmendingen
+4	NULL	Jahr	1889-1890
+4	NULL	Autor	Koralek, Ottilie
+4	NULL	Erschienen in	N/A
+4	NULL	Herausgeber	Tagebucharchiv Emmendingen Unveröffentlichte Transkription (Hollmann)
+4	NULL	Verlag	N/A
+4	NULL	Ort	N/A
+4	NULL	Seitenabschnitt	S. 35 und 43-76
+4	NULL	bibl	Koralek V = Koralek, Ottilie (1889-1890): Lamentatio intermissa I. Tagebucharchiv Emmendingen. Unveröffentlichte Transkription (Hollmann), S. 35 und 43-76.
+5	NULL	Titel	Ein Söldnerleben im Dreißigjährigen Krieg. Eine Quelle zur Sozialgeschichte
+5	NULL	Jahr	1625-1649
+5	NULL	Autor	N/A
+5	NULL	Erschienen in	Selbstzeugnisse der Neuzeit 1
+5	NULL	Herausgeber	Jan Peters
+5	NULL	Verlag	Akademie-Verlag
+5	NULL	Ort	Berlin
+5	NULL	Seitenabschnitt	S. 35-111
+5	NULL	bibl	Söldnerleben I = (1625-1649/1993): Ein Söldnerleben im Dreißigjährigen Krieg. Eine Quelle zur Sozialgeschichte. Hg. v. Jan Peters. Berlin: Akademie-Verlag 1993 (Selbstzeugnisse der Neuzeit 1), S. 35-111.
+6	NULL	Titel	Die Geburt der Tragödie
+6	NULL	Jahr	1872
+6	NULL	Autor	Nietzsche, Friedrich
+6	NULL	Erschienen in	Ders.: Die Geburt der Tragödie. Unzeitgemäße Betrachtungen
+6	NULL	Herausgeber	Giorgio Colli und Mazzino Montinari
+6	NULL	Verlag	Deutscher Taschenbuchverlag
+6	NULL	Ort	München
+6	NULL	Seitenabschnitt	S. 25-67
+6	NULL	bibl	Nietzsche V = Nietzsche, Friedrich (1872/1999): Die Geburt der Tragödie. In: Ders.: Die Geburt der Tragödie. Unzeitgemäße Betrachtungen. Kritische Studienausgabe. Hg. v. Giorgio Colli und Mazzino Montinari. München: Deutscher Taschenbuchverlag 1999 [Neuausgabe der KSA Berlin/New York: de Gruyter 1967ff]. Abschnitte 1 - 9 (S. 25-67).
+7	NULL	Titel	Ausübung der Sittenlehre. (Von der Artzeney wider die unvernünfftige Liebe und der zuvorher nöthigen Erkäntniss Sein Selbst oder Ausübung der Sittenlehre)
+7	NULL	Jahr	1696
+7	NULL	Autor	Thomasius, Christian
+7	NULL	Erschienen in	Ders.: Die Geburt der Tragödie. Unzeitgemäße Betrachtungen. Kritische Studienausgabe
+7	NULL	Herausgeber	N/A
+7	NULL	Verlag	Olms
+7	NULL	Ort	Hildesheim
+7	NULL	Seitenabschnitt	S. 1-36 und S.219-257
+7	NULL	bibl	Thomasius I = Thomasius, Christian (1696/1968): Ausübung der Sittenlehre. (Von der Artzeney wider die unvernünfftige Liebe und der zuvorher nöthigen Erkäntniss Sein Selbst oder Ausübung der Sittenlehre). Mit einem Vorwort von Werner Schneiders. Hildesheim: Olms 1968 [Nachdruck der Ausgabe Halle: Salfeld 1696], 1. Hauptstück (S. 1-36) und 10. Hauptstück (S. 219-257).
+8	NULL	Titel	Michael Zimmer's Diary. Ein deutsches Tagebuch aus dem Amerikanischen Bürgerkrieg
+8	NULL	Jahr	1861-64
+8	NULL	Autor	Zimmer, Michael
+8	NULL	Erschienen in	Sprachgeschichte des Deutschen in Nordamerika 1
+8	NULL	Herausgeber	Jürgen Macha und Andrea Wolf
+8	NULL	Verlag	Lang 
+8	NULL	Ort	Frankfurt/Main et al.
+8	NULL	Seitenabschnitt	S. 12-15, 17-23, 25-31, 35-38, 42-49, 57-60, 102-105, 116-117
+8	NULL	bibl	Zimmer V = (1861-64/2001): Michael Zimmer's Diary. Ein deutsches Tagebuch aus dem Amerikanischen Bürgerkrieg. Hg. v. Jürgen Macha, und Andrea Wolf. Frankfurt/Main et al.: Lang 2001 (Sprachgeschichte des Deutschen in Nordamerika 1), S. 12-15, 17-23, 25-31, 35-38, 42-49, 57-60, 102-105, 116-117.
