@@ -1,28 +1,22 @@
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util;
 
+import org.osgi.service.log.LogService;
+
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAbstractAnnotation;
 
 public abstract class ConversionClass {
 
 	
-	public static void convert(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue)
+	public static void convert(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue, LogService logService)
 	{
 		if(attrName == null || attrValue == null)
 		{
 			if(elementName.equals("pb"))
 			{
-//				sAnno.setName("pb");
-//				sAnno.setValue("pb");
 				return;
 			}
-			/*
-			 * This part is for the line commentary
-			 * TODO: need a way to determine the current line and increment it
-			 */
 			else if(elementName.equals("line"))	 
 			{
-//				sAnno.setName("line");
-//				sAnno.setValue("line");
 				return;
 			}
 			else if(elementName.equals("lb"))
@@ -285,45 +279,21 @@ public abstract class ConversionClass {
 			}
 			else
 			{
-				System.out.println("WARNING: Unknown tag without attributes ("+elementName+")");
+				logService.log(LogService.LOG_WARNING, "Unknown tag without attributes ("+elementName+")");
 			}
 		}
 		else
 		{
 			if(elementName.equals("line"))
 			{
-//				if(attrName.equals("n"))
-//				{
-//					sAnno.setName("line_n");
-//					sAnno.setValue(attrValue);
-//					return;
-//				}
-//				else
-//					System.out.println("no handler for "+ elementName+"_"+attrName);
 				return;
 			}
 			else if(elementName.equals("doc"))
 			{
-//				if(attrName.equals("ID"))
-//				{
-//					sAnno.setName(attrName);
-//					sAnno.setValue(attrValue);
-//					return;
-//				}
-//				else 
-//					System.out.println("no handler for "+ elementName+"_"+attrName);
 				return;
 			}
 			else if(elementName.equals("pb"))
 			{
-//				if(attrName.equals("n"))
-//				{
-//					sAnno.setName("pb_n");
-//					sAnno.setValue(attrValue);
-//					return;
-//				}
-//				else 
-//					System.out.println("no handler for "+ elementName+"_"+attrName);
 				return;
 			}
 			else if(elementName.equals("lb"))
@@ -365,7 +335,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("AP"))
 			{
@@ -394,7 +364,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("praed"))
 			{
@@ -423,7 +393,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("VOR"))
 			{
@@ -452,7 +422,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("SUB"))
 			{
@@ -511,7 +481,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("obj"))
 			{
@@ -534,7 +504,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("V"))
 			{
@@ -563,7 +533,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("KOR"))
 			{
@@ -604,7 +574,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("FOK"))
 			{
@@ -627,7 +597,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("KON"))
 			{
@@ -644,7 +614,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("VV"))
 			{
@@ -691,7 +661,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("HV"))
 			{
@@ -762,7 +732,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("XX"))
 			{
@@ -791,7 +761,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+ elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("ADV"))
 			{
@@ -814,7 +784,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("IP"))
 			{
@@ -831,7 +801,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("newline"))
 			{
@@ -842,7 +812,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("newpage"))
 			{
@@ -853,7 +823,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("RF"))
 			{
@@ -869,7 +839,7 @@ public abstract class ConversionClass {
 					sAnno.setValue(attrValue);
 					return;
 				}
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals(""))
 			{
@@ -880,7 +850,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("Inf"))
 			{
@@ -897,7 +867,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("AD"))
 			{
@@ -914,11 +884,11 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					System.out.println("no handler for "+elementName+"_"+attrName);
+					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
 			}
 			else
 			{
-				System.out.println("WARNING: Unknown tag with attributes ("+elementName+")");
+				logService.log(LogService.LOG_WARNING, "Unknown tag with attributes ("+elementName+")");
 			}
 		}
 	}

@@ -49,7 +49,7 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 			{	
 				parser= factory.newSAXParser();
 				xmlReader = parser.getXMLReader();
-				xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
+				xmlReader.setContentHandler(new KajukContentHandler(getSDocument(),this.getLogService()));
 			}
 			catch(ParserConfigurationException e)
 			{
@@ -76,7 +76,7 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 				{
 					parser= factory.newSAXParser();
 					xmlReader= parser.getXMLReader();
-					xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
+					xmlReader.setContentHandler(new KajukContentHandler(getSDocument(), getLogService()));
 					xmlReader.parse(file.getAbsolutePath());
 				}
 				catch (Exception e1) 

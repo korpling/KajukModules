@@ -3,21 +3,15 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util;
 
 
 import java.util.Collection;
-
-import de.hu_berlin.german.korpling.saltnpepper.salt.graph.Node;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.tokenizer.*;
-
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Locale.*;
-
-import javax.security.auth.callback.LanguageCallback;
+import java.util.Vector;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.osgi.service.log.LogService;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
@@ -31,18 +25,70 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpan;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SSpanningRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualDS;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.STextualRelation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.SToken;
+import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.tokenizer.Tokenizer;
 //import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.tokenizer.Tokenizer;
 //import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructure.tokenizer.*;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAbstractAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SLayer;
-import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SNode;
 
-public class KajukContentHandler extends DefaultHandler2 KajukProperties implements ContentHandler 
+public class KajukContentHandler extends DefaultHandler2 implements ContentHandler 
 {
 
+	private static final String SPAN_ANNO=
+			"doc," +
+			"newline,"+
+			"newpage,"+
+			"lb";
+	
+	private static final String TOK_ANNO = 
+			"V, " +
+			"lb, "+
+			"VV, " +
+			"HV," +
+			"AcI," +
+			"AD," +
+			"ADJGr, " +
+			"ADV, " +
+			"akk, " +
+			"AP, " +
+			"FOK, " +
+			"FV, " +
+			"HMV, " +
+			"J, " +
+			"KON, " +
+			"KOR, " +
+			"KV, " +
+			"LASSEN, " +
+			"MV, " +
+			"obj, " +
+			"obl, " +
+			"prae, " +
+			"PGr, " +
+			"Phras, " +
+			"praed, " +
+			"RF, " +
+			"SUB, " +
+			"IP, " +
+			"subj, " +
+			"TUN, " +
+			"VFin, " +
+			"VP, " +
+			"PV, " +
+			"VV, " +
+			"XX, " +
+			"praed," +
+			"subj," +
+			"J," +
+			"FOK," +
+			"Inf," +
+			"VOR," +
+			"";
+	
+	private static final String ELLIPSIS = 
+			"";
+	
 	private SDocument sDocument;
 	private STextualDS currentSDS;
 	private XPathExpression currentXPath = null;
@@ -55,11 +101,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	private HashMap<String, LinkedList<SSpan>> houseNumbers;
 	private boolean isEllipsis;
 	private String currentEllipsis;
-	private boolean withinText;
 	private StringBuilder stringBuilder;
-	private String realString;
-	private int tokNumber;
-	
 	private Tokenizer tokenizer;
 	
 	private SLayer junktionen;
@@ -69,13 +111,15 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	private SLayer sachverhaltsdarstellungen;
 	private SLayer graphische_annotationen;
 	private SLayer hilfsannotationen;
-	
+
+	private LogService logService;
 	
 	// this is the hashmap for the annotations 
 	private HashMap<String, EList<SAbstractAnnotation>> annotationMap;
 	
-	public KajukContentHandler(SDocument sDocument)
+	public KajukContentHandler(SDocument sDocument, LogService logService)
 	{
+		this.logService = logService;
 		this.sDocument = sDocument;
 		this.currentXPath = new XPathExpression();
 		this.currentSDS = SaltFactory.eINSTANCE.createSTextualDS();
@@ -90,14 +134,10 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		this.houseNumbers = new HashMap<String, LinkedList<SSpan>>();
 		this.isEllipsis = false;
 		this.currentEllipsis = "";
-		this.withinText = false;
-		this.realString = "";
 		this.stringBuilder = new StringBuilder();
-		this.tokNumber = 1;
-		
 		this.tokenizer = new Tokenizer();
 		
-		this.junktionen 					= SaltFactory.eINSTANCE.createSLayer();
+		this.junktionen	= SaltFactory.eINSTANCE.createSLayer();
 		this.junktionen.setSName("junktionen");
 		this.sDocumentGraph.addSLayer(junktionen);
 		this.lexikalische_annotationen		= SaltFactory.eINSTANCE.createSLayer();
@@ -125,12 +165,14 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	 * This method returns all read characters. What we do is the following: 
 	 * At first we get the text so far by currentSDS.getSText(), which will be appended to a new textbuffer. With this, we are 
 	 * able to determine the start and end indexes of the new token. After the creation of the token, a STextualRelation between the token 
-	 * and the STextualDS is created with the use of the sStart and sEnd indexes. 
+	 * and the STextualDS is created with the use of the sStart and sEnd indexes.
+	 * 
+	 * @param ch	the character sequence to be evaluated
+	 * @param start	the index of the sequence relative to the STextualDS
+	 * @param length	the length of the sequence
 	 */
 	public void characters(char[] ch, int start, int length) throws SAXException 
 	{
-		
-		
 		StringBuffer textBuf= new StringBuffer();
 		for (int i= start; i< start+length; i++)
 			textBuf.append(ch[i]);
@@ -153,7 +195,6 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 			
 			if(!check.equals(""))
 			{
-								
 				if(this.openToken != null && this.openToken.peek() != null)
 				{
 					EList<SToken> tokenized = null;
@@ -185,7 +226,11 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	}
 	
 	/**
-	 * here we want to put every open tag onto a stack
+	 * Evaluates the elements of the xml file according to the corpus structure. The main focus lies on putting 
+	 * the opened tags onto a stack for later use, depending on the tagname itself. 
+	 * <p>
+	 * There are two special tags that need to be handeled differently, namely <b>newline</b> and <b>newpage</b>. 
+	 * Additionally this method is responsible to detect multi-level spans of the <b>lb</b>-tag and ellipsis.
 	 */
 	public void startElement(	String uri, 
 								String localName, 
@@ -193,6 +238,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 								Attributes attributes) 
 			throws SAXException 
 	{
+		// we ignore those, because we replaced them with newline and newpage
 		if(qName.equals("pb") || qName.equals("line"))
 			return;
 		
@@ -206,7 +252,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 				this.annotationMap.put("lb_"+this.multiLevelLb, h_createSAbstractAnnotations(qName, attributes));
 			}
 			else
-				System.out.println(qName + " already in AnnotationMap, should not be there.. ");
+				this.logService.log(LogService.LOG_WARNING, qName + " already in AnnotationMap, should not be there.. ");
 		}
 		else
 		{
@@ -221,8 +267,8 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 				this.currentEllipsis = qName;
 			}
 		}
-		
-		
+
+
 		if(h_matches(h_getTokAnnoList(), this.currentXPath))
 		{
 			this.openToken.add(qName);
@@ -233,7 +279,6 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 			if(qName.equals("newline"))
 			{
 				
-				// This is the case that there already was a newline element
 				if(this.openSpans.get(qName) != null)
 				{
 					SSpan sSpan = SaltFactory.eINSTANCE.createSSpan();
@@ -250,11 +295,8 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 						for(SToken sToks : this.openSpans.get(qName)) 
 						{
 							SSpanningRelation sSpanRel= SaltFactory.eINSTANCE.createSSpanningRelation();
-							//setting the span as source of the relation
 							sSpanRel.setSSpan(sSpan);
-							//setting the first token as target of the relation
 							sSpanRel.setSToken(sToks);
-							//adding the created relation to the document-graph
 							sDocument.getSDocumentGraph().addSRelation(sSpanRel);
 						}
 					}
@@ -263,7 +305,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 				else // this is the case if it is the first newline element evah
 				{
 					this.openSpans.put(qName, new LinkedList<SToken>());
-					System.out.println("put "+qName+" to openSpans");
+					this.logService.log(LogService.LOG_DEBUG, "put "+qName+" to openSpans");
 				}
 				for(int i = 0; i<=attributes.getLength(); i++)
 				{
@@ -292,11 +334,8 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 						for(SToken sToks : this.openSpans.get(qName)) 
 						{
 							SSpanningRelation sSpanRel= SaltFactory.eINSTANCE.createSSpanningRelation();
-							//setting the span as source of the relation
 							sSpanRel.setSSpan(sSpan);
-							//setting the first token as target of the relation
 							sSpanRel.setSToken(sToks);
-							//adding the created relation to the document-graph
 							sDocument.getSDocumentGraph().addSRelation(sSpanRel);
 						}
 					}
@@ -320,21 +359,24 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		}
 		
 	}
-	
+
+	/**
+	 * Creates the spans if a tag closes according to the specified 
+	 */
 	public void endElement(	String uri, 
 							String localName, 
 							String qName)
 			throws SAXException 
 	{
-			this.withinText = false;
-			//this.stringBuilder = null;
 			if(this.stringBuilder!=null && this.stringBuilder.toString().length() > 0)
 			{
-				this.realString = this.stringBuilder.toString();
+				this.stringBuilder.toString();
 				this.stringBuilder = null;
 			}
+			// we ignore those, because we replaced them with newpage and newline
 			if(qName.equals("pb") || qName.equals("line"))
 				return;
+			
 			if(h_matches(h_getTokAnnoList(), this.currentXPath))
 			{
 				this.openToken = h_removeOpenToken(this.openToken,qName);
@@ -360,6 +402,8 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 					sSpan.setSName(qName);
 					SAnnotation sAnno= SaltFactory.eINSTANCE.createSAnnotation();
 					sAnno = h_getSAbstractSpanAnnotation(qName, this.annotationMap.get(qName));
+					
+					// get every housenumber from the attributes of the corresponding startElement()
 					LinkedList<String> numbers = new LinkedList<String>();
 					numbers = h_getHouseNumbers(qName);
 					for(String nr : numbers)
@@ -379,7 +423,6 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 					}
 					if(sAnno.getName() != null) // this test is to make sure there are no "null" spans
 					{
-//						h_createRelationType(numbers,sSpan);
 						sSpan.addSAnnotation(sAnno);
 						if(qName.equals("lb"))
 						{
@@ -388,39 +431,22 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 							sAnno.setSValue("lb");
 							sSpan.addSAnnotation(sAnno);
 						}
-						//h_copySAbstractAnnotations(sSpan);
 						this.sDocument.getSDocumentGraph().addSNode(sSpan);
-						//create spanning relations to all tokens
 						for(SToken sToks : this.openSpans.get(qName)) 
 						{
 							SSpanningRelation sSpanRel= SaltFactory.eINSTANCE.createSSpanningRelation();
-							//setting the span as source of the relation
 							sSpanRel.setSSpan(sSpan);
-							//setting the first token as target of the relation
 							sSpanRel.setSToken(sToks);
-							//adding the created relation to the document-graph
 							sDocument.getSDocumentGraph().addSRelation(sSpanRel);
-							
-							
-							
-							//adding the annotation to the placeholder span
-		//					sDocument.getSDocumentGraph().getSSpans().get(0).addSAnnotation(sAnno);
-		//					
-		//					sAnno= SaltFactory.eINSTANCE.createSAnnotation();
-		//					sAnno.setSName("Inf-Struct");
-		//					sAnno.setSValue("topic");
-		//					sDocument.getSDocumentGraph().getSSpans().get(1).addSAnnotation(sAnno);
 						}
 					}
 					this.openSpans.remove(qName);
 				}
-				
 			}
 			this.currentXPath.removeLastStep();
 			
 			if(this.annotationMap.get(qName) != null)
 			{
-				// TODO: maybe we have to distinguish the actual "lb" to be removed
 				if(qName.equals("lb") && this.multiLevelLb>0)
 				{
 					this.annotationMap.remove("lb_"+this.multiLevelLb);
@@ -431,22 +457,11 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 			}
 			else
 			{
-				System.out.println(qName + " was already removed or never in the annotationMap");
+				this.logService.log(LogService.LOG_WARNING, qName + " was already removed or never in the annotationMap");
 			}
-			
-			// it is necessary to distinguish between span tags and newline/newpage, because
-			// their usage differs. A line/page ends at the open tag of newline/newpage
-			// and starts at the close tag
-//			if(qName.equals("newline") || qName.equals("newpage"))
-//			{
-//				if(this.openSpans.get(qName) == null)
-//					this.openSpans.put(qName, new LinkedList<SToken>());
-//				else
-//					System.out.println("newline/newpage already there");
-//			}
-
 
 	}
+
 	
 	public String removeControlCharacters(String text)
 	{
@@ -467,8 +482,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	
 	/**
 	 * This method creates the appropriate Annotations according to xml_nach_AWP_Martin20120827.xlsx
-	 * 
-	 *  TODO: we want to create annotations also if no attributes are given. 
+	 * <p> 
 	 *  e.g. the element &lt;AD&gt;&lt;/AD&gt; equals J_type="AD" 
 	 *  
 	 * @param qName the current element
@@ -478,7 +492,6 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 	private EList<SAbstractAnnotation> h_createSAbstractAnnotations(	String qName,
 																		Attributes attributes)
 	{
-		//System.out.println("Element "+qName+" attributes: " + attributes.getLength());
 		EList<SAbstractAnnotation> annoList = null;
 		
 		for(int i =0; i<=attributes.getLength(); i++)
@@ -495,12 +508,12 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 			{
 				if(i == attributes.getLength())
 				{
-					h_getProperAnnotations(sAnno, qName, null, null);
+					ConversionClass.convert(sAnno, qName, null, null, this.logService);
 				}
 				else
-					h_getProperAnnotations(sAnno, qName, attributes.getQName(i),attributes.getValue(i));
+					ConversionClass.convert(sAnno, qName, attributes.getQName(i),attributes.getValue(i), this.logService);
 				if(sAnno.getSName() == null && !qName.equals("doc") && !qName.equals("newline") && !qName.equals("newpage") && !qName.equals("line") && !qName.equals("pb"))
-					System.out.println("WARNING: sAnno still null - qName = " + qName);
+					this.logService.log(LogService.LOG_WARNING, "sAnno still null - qName = " + qName);
 				else
 				{
 					annoList.add(sAnno);
@@ -512,6 +525,14 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		return annoList;
 	}
 	
+	/**
+	 * Returns the annotation saved in the annotationList under specific conditions. No empty entries and 
+	 * no identical key-value
+	 * 
+	 * @param qName	the name of the current tag
+	 * @param annotations	the list of annotations
+	 * @return the specified SAnnotation
+	 */
 	private SAnnotation h_getSAbstractSpanAnnotation(	String qName, EList<SAbstractAnnotation> annotations )
 	{
 		SAnnotation sAnno = null;
@@ -527,6 +548,11 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		return sAnno;
 }
 	
+	/**
+	 * Returns a List of housenumbers gathered from the attributes as strings.
+	 * @param qName	the name of the current tag
+	 * @return a list of numbers as strings
+	 */
 	private LinkedList<String> h_getHouseNumbers(String qName)
 	{
 		LinkedList<String> list = new LinkedList<String>();
@@ -544,88 +570,17 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		return list;
 	}
 	
-	
 	/**
-	 * this method creates the actual annotations
-	 * @param sAnno the annotation object
-	 * @param elementName the current element name
-	 * @param attrName the attribute name
-	 * @param attrValue the attribute value
+	 * This method creates the SPointingRelations according to the saved house numbers saved in the 
+	 * <b>houseNumbers</b>-map. The pointing hierarchy is considered as well. 
 	 */
-	private void h_getProperAnnotations(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue)
-	{
-		ConversionClass.convert(sAnno, elementName, attrName, attrValue);
-	}
-
-	
-//	private class ElementNodeEntry
-//	{
-//		public List<SNode> openSNodes=null;
-//		
-//		public String nodeName = null;
-//		
-//		public EList<SAbstractAnnotation> annotations = null;
-//		
-//		public Boolean isComplex = false;
-////		public SToken representedSToken=null;
-//		
-////		public ElementNodeEntry( 	final String nodeName, 
-////									final EList<SAbstractAnnotation> annotations)
-////		{
-////			this.nodeName = nodeName;
-////			this.annotations = annotations;
-////			this.openSNodes = new Vector<SNode>();
-////		}
-//		
-////		public Boolean isComplex()
-////		{
-////			return isComplex;
-////		}
-////		public void setIsComplex(Boolean isComplex)
-////		{
-////			this.isComplex = isComplex;
-////			if( 	isComplex &&
-////					representedSToken == null)
-////			{
-////				if(!this.openSNodes.contains(representedSToken))
-////					this.openSNodes.add(representedSToken);
-////				
-////				if(elementNodeStack.size()>1)
-////					elementNodeStack.get(elementNodeStack.size()-2).openSNodes.remove(representedSToken);
-////				representedSToken= null;
-////			}
-////		}
-//		
-//		public String toString()
-//		{
-//			return ("["+nodeName+", annotations: "+annotations+", isComplex: "+isComplex+", openSNodes: "+this.openSNodes+"]");
-//		}
-//	}
-	
-	
 	public void endDocument() throws SAXException {
-		int d = 0;
 		for(String st : this.houseNumbers.keySet())
 		{
-			d += this.houseNumbers.get(st).size();
+			this.houseNumbers.get(st).size();
 		}
 
 		HashMap<String,LinkedList<SSpan>> tmp = new HashMap<String,LinkedList<SSpan>>();
-		for(String str : this.houseNumbers.keySet())
-		{
-//			if(str.contains("a") || str.contains("b"))
-//			{
-//				LinkedList<SSpan> oldSpans = new LinkedList<SSpan>();
-//				oldSpans = this.houseNumbers.get(str.subSequence(0, str.length()-1)); 
-//				if(oldSpans != null)
-//					oldSpans.addAll(this.houseNumbers.get(str));
-//				else
-//					oldSpans = this.houseNumbers.get(str);
-//				if(str.trim().equals(""))
-//					System.out.println("WARNING, putting \"\" in houseNumbers");
-//				tmp.put(str.substring(0,str.length()-1), oldSpans);
-//			}
-		}
 		for(String str : tmp.keySet())
 		{
 			this.houseNumbers.put(str, tmp.get(str));
@@ -633,36 +588,21 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		
 		for(String str : this.houseNumbers.keySet())
 		{
-//				System.out.println("\n\n"+str + " has " +this.houseNumbers.get(str).size()+ " spans\n");
 			for(SSpan span : this.houseNumbers.get(str))
 			{
-//					for(SAnnotation sAnno : span.getSAnnotations())
-//					{
-//						if(sAnno != null && sAnno.getName() != null && sAnno.getName().equals("lb_n"))
-//							System.out.println(sAnno.getName() + " \t-\t "+sAnno.getValueString());
-//						
-//					}
-//					System.out.println("**************");
 				int index=0;
 				for(int i = 0; i < this.houseNumbers.get(str).size(); i++)
 				{
 					if(this.houseNumbers.get(str).get(i).equals(span))
 						index = i+1;
 				}
-				
 				if(index < this.houseNumbers.get(str).size())//  && (str.equals("1")|| str.equals("1a") || str.equals("3001") || str.equals("3003")))
 				{
-//						System.out.println("connecting " + this.houseNumbers.get(str).indexOf(span)+ " with " + index + "("+this.houseNumbers.get(str).size()+")");
-//						System.out.println("\t"+span+" to " + this.houseNumbers.get(str).get(index));
 					
 					SPointingRelation sPointingRelation = SaltFactory.eINSTANCE.createSPointingRelation();
 					sPointingRelation.setSSource(span);
 					sPointingRelation.setSTarget(this.houseNumbers.get(str).get(index));
-					System.out.println("connecting "+span.getIdentifier().getId() + " with " + this.houseNumbers.get(str).get(index).getIdentifier().getValueString() );
-					System.out.println(str);
-					if(span == this.houseNumbers.get(str).get(index))
-						System.out.println("WARNING: pointing relation to itself!");
-					//System.out.println("creating PR from "+span.getSAnnotation("lb_n").getValueString() + " to " + this.houseNumbers.get(str).get(index).getSAnnotation("lb_n").getValueString());
+					this.logService.log(LogService.LOG_DEBUG, "connecting "+span.getIdentifier().getId() + " with " + this.houseNumbers.get(str).get(index).getIdentifier().getValueString()+"\n"+str );
 					sDocument.getSDocumentGraph().addSRelation(sPointingRelation);
 					String type = "";
 					int ret;
@@ -681,56 +621,15 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 					if(!type.equals(""))
 						sPointingRelation.addSType(type);	
 					else
-						System.out.println("WARNING: house number type is wrong!");
+						this.logService.log(LogService.LOG_WARNING, "House number type is wrong!");
 				}
-				else
-				{
-//					if(this.houseNumbers.get(str+"a")!= null && !this.houseNumbers.get(str+"a").isEmpty())
-//					{
-//						System.out.println("get(str+a) == " + this.houseNumbers.get(str+"a"));
-//						for(SSpan tmpSpan : this.houseNumbers.get(str+"a"))
-//						{
-//							SPointingRelation sPointingRelation = SaltFactory.eINSTANCE.createSPointingRelation();
-//							sPointingRelation.setSSource(span);
-//							sPointingRelation.setSTarget(tmpSpan);
-//							sDocument.getSDocumentGraph().addSRelation(sPointingRelation);
-//							String type = "";
-//							int ret;
-//							if(str.contains("a") || str.contains("b"))
-//								ret = Integer.valueOf(str.substring(0, str.length()-1));
-//							else
-//								ret = Integer.valueOf(str);
-//							if(ret >= 1 && ret <= 999)
-//								type = "SubKon";
-//							else if(ret >= 1000 && ret <= 1999)
-//								type = "LatSub";
-//							else if(ret >= 2000 && ret <= 2999)
-//								type = "APAD";
-//							else if(ret >= 3000)
-//								type = "E";
-//							if(!type.equals(""))
-//								sPointingRelation.addSType(type);	
-//							else
-//								System.out.println("WARNING: house number type is wrong!");
-//						}
-//					}
-//					else
-//						System.out.println("this.housenumbers.get("+str+"a) == null!");
-				}
-				
-				
 			}
-			
-			
 		}
-		
 		for(String str : this.houseNumbers.keySet())
 		{
 			if(str.contains("a") || str.contains("b"))
 			{
 				String get = str.substring(0,str.length()-1);
-				System.out.println("\""+get+"\"");
-				System.out.println(this.houseNumbers.keySet());
 				SPointingRelation sPointingRelation = SaltFactory.eINSTANCE.createSPointingRelation();
 				sPointingRelation.setSSource(this.houseNumbers.get(get).getLast());
 				sPointingRelation.setSTarget(this.houseNumbers.get(str).getFirst());
@@ -752,54 +651,13 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 				if(!type.equals(""))
 					sPointingRelation.addSType(type);	
 				else
-					System.out.println("WARNING: house number type is wrong!");
+					this.logService.log(LogService.LOG_WARNING, "House number type is wrong!");
 			}
 		}
-		
 		sDocument.setSDocumentGraph(sDocumentGraph);
 	}
 
 
-
-	public void endPrefixMapping(String arg0) throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
-			throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void processingInstruction(String arg0, String arg1)
-			throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setDocumentLocator(Locator arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void skippedEntity(String arg0) throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void startDocument() throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-	public void startPrefixMapping(String arg0, String arg1)
-			throws SAXException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private boolean h_matches(Collection<XPathExpression> xprList, XPathExpression xpr)
 	{
@@ -814,7 +672,11 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		return false;
 	}
 	
-	private void h_copySAbstractAnnotations(SNode sNode)
+	/**
+	 * This method adds the STokens to their corresponding layers defined 
+	 * @param sToken	an SToken
+	 */
+	private void h_copySAbstractAnnotations(SToken sToken)
 	{
 		for(int i = 0; i < this.currentXPath.getSteps().size(); i++)
 		{
@@ -826,14 +688,13 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 					retAnnotation.setName(sAnno.getSName());
 					retAnnotation.setSValue(sAnno.getSValue());
 					
-					/* here we add the node directly to the corresponding layer */
 					if(		sAnno.getSName().equals("J") ||
 							sAnno.getSName().equals("ADDIR") ||
 							sAnno.getSName().equals("IR") ||
 							sAnno.getSName().equals("ID")
 					)
 					{
-						this.junktionen.getSNodes().add(sNode);
+						this.junktionen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().equals("pos_KAJUK") ||
@@ -841,7 +702,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 							sAnno.getSName().equals("change") 
 					)
 					{
-						this.lexikalische_annotationen.getSNodes().add(sNode);
+						this.lexikalische_annotationen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().equals("satzglied") ||
@@ -850,19 +711,19 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 							sAnno.getSName().equals("Vorfeld")
 					)
 					{
-						this.syntaktische_annotationen.getSNodes().add(sNode);
+						this.syntaktische_annotationen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().contains("_E")
 					)
 					{
-						this.ellipsenannotationen.getSNodes().add(sNode);
+						this.ellipsenannotationen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().contains("lb")
 					)
 					{
-						this.sachverhaltsdarstellungen.getSNodes().add(sNode);
+						this.sachverhaltsdarstellungen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().equals("line") ||
@@ -870,7 +731,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 							sAnno.getSName().equals("doc") 
 					)
 					{
-						this.graphische_annotationen.getSNodes().add(sNode);
+						this.graphische_annotationen.getSNodes().add(sToken);
 					}
 					
 					if(		sAnno.getSName().equals("XX") ||
@@ -878,7 +739,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 							sAnno.getSName().equals("norm") 
 					)
 					{
-						this.hilfsannotationen.getSNodes().add(sNode);
+						this.hilfsannotationen.getSNodes().add(sToken);
 					}
 					
 					
@@ -887,11 +748,7 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 					{
 						if(!sAnno.getSName().equals("E") && !sAnno.getSName().contains("_E"))
 							retAnnotation.setSName(sAnno.getSName()+"_E");
-						sNode.addSAnnotation((SAnnotation)retAnnotation);
-					}
-					else
-					{
-						sNode.addSAnnotation((SAnnotation)retAnnotation);
+						sToken.addSAnnotation((SAnnotation)retAnnotation);
 					}
 				}
 			}
@@ -911,80 +768,55 @@ public class KajukContentHandler extends DefaultHandler2 KajukProperties impleme
 		return ret;
 	}
 	
-	private void h_createRelationType(LinkedList<String> numbers, SSpan sSpan)
+	
+	
+	private Collection<XPathExpression>spanList = null;
+	public Collection<XPathExpression> h_getSpanList()
 	{
-		HashMap<String, String> annoList = new HashMap<String, String>();
-		for(String nr : numbers)
+		if(spanList == null)
 		{
-			try
-			{
-				int integerNr;
-				if(nr.contains("a") || nr.contains("b"))
-				{
-					String ret = nr.substring(0, nr.length()-1).trim();
-					if(!ret.equals(""))
-						integerNr = Integer.valueOf(ret);
-					else
-						integerNr = -1;
-				}
-				else 
-				{
-					if(!nr.trim().equals(""))
-						integerNr = Integer.valueOf(nr.trim());
-					else
-						integerNr = -1;
-				}
-				
-				if(integerNr > 0 && integerNr <1000)
-				{
-					if(annoList.get("Hn0") != null)
-						annoList.put("Hn0", annoList.get("Hn0") +","+ nr);
-					else
-						annoList.put("Hn0", nr);
-				}
-				else if(integerNr >= 1000 && integerNr < 2000)
-				{
-					if(annoList.get("Hn1") != null)
-						annoList.put("Hn1", annoList.get("Hn1") +","+ nr);
-					else
-						annoList.put("Hn1", nr);
-				}
-				else if(integerNr >= 2000 && integerNr < 3000)
-				{
-					if(annoList.get("Hn2") != null)
-						annoList.put("Hn2", annoList.get("Hn2") +","+ nr);
-					else
-						annoList.put("Hn2", nr);
-				}
-				else if(integerNr >= 3000)
-				{
-					if(annoList.get("Hn3") != null)
-						annoList.put("Hn3", annoList.get("Hn3") +","+ nr);
-					else
-						annoList.put("Hn3", nr);
-				}
-				else if(integerNr == -1)
-				{
-					System.out.println("WARNING: got empty number, but that is not that important " + nr);
-				}
-				else
-				{
-					System.out.println("WARNING: got wrong number, that's bad! " + nr);
-				}
-			}
-			catch(NumberFormatException e)
-			{
-				System.out.println("ERROR: NumberFormatException");
-			}
+			Collection<XPathExpression> xPathList = extractXPathExpression(SPAN_ANNO);
+			if(spanList == null)
+				spanList = xPathList;
 		}
-		
-		for(String annoName : annoList.keySet())
-		{
-			SAnnotation sAnno = SaltFactory.eINSTANCE.createSAnnotation();
-			sAnno.setSName(annoName);
-			sAnno.setSValue(annoList.get(annoName));
-			sSpan.addSAnnotation(sAnno);
-		}
+		return spanList;
 	}
 	
+	private Collection<XPathExpression> tokAnnoList = null;
+	public Collection<XPathExpression> h_getTokAnnoList()
+	{
+		if(tokAnnoList == null)
+		{
+			Collection<XPathExpression> xPathList = extractXPathExpression(TOK_ANNO);
+			if(tokAnnoList == null)
+				tokAnnoList = xPathList;
+		}
+		return tokAnnoList;
+	}
+	
+	private Collection<XPathExpression> ellipsisList = null;
+	public Collection<XPathExpression> h_getEllispsisList()
+	{
+		if(ellipsisList == null)
+		{
+			Collection<XPathExpression> xPathList = extractXPathExpression(ELLIPSIS);
+			if(ellipsisList == null)
+				ellipsisList = xPathList;
+		}
+		return ellipsisList;
+	}
+	
+	private synchronized Collection<XPathExpression> extractXPathExpression(String propName)
+	{
+		Collection<XPathExpression> xPathList = new Vector<XPathExpression>();
+
+		String[] xPathListStr = propName.split(",");
+		if(xPathList!=null)
+		{
+			for(String xPathString : xPathListStr)
+				xPathList.add(new XPathExpression(xPathString.trim()));
+		}
+		return xPathList;
+		
+	}
 }
