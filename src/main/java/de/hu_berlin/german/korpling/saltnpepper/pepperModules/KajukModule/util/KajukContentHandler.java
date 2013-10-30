@@ -37,54 +37,11 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 {
 
 	private static final String SPAN_ANNO=
-			"doc," +
-			"newline,"+
-			"newpage,"+
-			"lb";
+			"doc,newline,newpage,lb";
 	
 	private static final String TOK_ANNO = 
-			"V, " +
-			"lb, "+
-			"VV, " +
-			"HV," +
-			"AcI," +
-			"AD," +
-			"ADJGr, " +
-			"ADV, " +
-			"akk, " +
-			"AP, " +
-			"FOK, " +
-			"FV, " +
-			"HMV, " +
-			"J, " +
-			"KON, " +
-			"KOR, " +
-			"KV, " +
-			"LASSEN, " +
-			"MV, " +
-			"obj, " +
-			"obl, " +
-			"prae, " +
-			"PGr, " +
-			"Phras, " +
-			"praed, " +
-			"RF, " +
-			"SUB, " +
-			"IP, " +
-			"subj, " +
-			"TUN, " +
-			"VFin, " +
-			"VP, " +
-			"PV, " +
-			"VV, " +
-			"XX, " +
-			"praed," +
-			"subj," +
-			"J," +
-			"FOK," +
-			"Inf," +
-			"VOR," +
-			"";
+			"V,lb,VV,HV,AcI,AD,ADJGr,ADV,akk,AP,FOK,FV,HMV,J,KON,KOR,KV,LASSEN,MV," +
+			"obj,obl,prae,PGr,Phras,praed,RF,SUB,IP,subj,TUN,VFin,VP,PV,VV,XX,praed,subj,J,FOK,Inf,VOR,";
 	
 	private static final String ELLIPSIS = 
 			"";
@@ -575,17 +532,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 	 * <b>houseNumbers</b>-map. The pointing hierarchy is considered as well. 
 	 */
 	public void endDocument() throws SAXException {
-		for(String st : this.houseNumbers.keySet())
-		{
-			this.houseNumbers.get(st).size();
-		}
-
-		HashMap<String,LinkedList<SSpan>> tmp = new HashMap<String,LinkedList<SSpan>>();
-		for(String str : tmp.keySet())
-		{
-			this.houseNumbers.put(str, tmp.get(str));
-		}
-		
+				
 		for(String str : this.houseNumbers.keySet())
 		{
 			for(SSpan span : this.houseNumbers.get(str))
