@@ -1,3 +1,18 @@
+/**
+ * Copyright 2009 Humboldt University of Berlin, INRIA.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util;
 
 
@@ -32,7 +47,12 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCommon.sDocumentStructu
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAbstractAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAnnotation;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SLayer;
-
+/**
+ * 
+ * 
+ * @author ze0
+ *
+ */
 public class KajukContentHandler extends DefaultHandler2 implements ContentHandler 
 {
 
@@ -45,7 +65,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 	
 	private static final String ELLIPSIS = 
 			"";
-	
+	/** **/
 	private SDocument sDocument;
 	private STextualDS currentSDS;
 	private XPathExpression currentXPath = null;
@@ -119,7 +139,6 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 	
 	
 	/**
-	 * This method returns all read characters. What we do is the following: 
 	 * At first we get the text so far by currentSDS.getSText(), which will be appended to a new textbuffer. With this, we are 
 	 * able to determine the start and end indexes of the new token. After the creation of the token, a STextualRelation between the token 
 	 * and the STextualDS is created with the use of the sStart and sEnd indexes.
@@ -347,7 +366,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 			
 			if(h_matches(h_getSpanList(), this.currentXPath))
 			{
-				if(qName.equals("newline") || qName.equals("newpage"))
+				if("newline".equals(qName) || qName.equals("newpage"))
 				{
 					// remember to start a span with the previous line number
 					this.openSpans.put(qName, new LinkedList<SToken>());

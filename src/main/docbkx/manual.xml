@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <info>
-        <title>KAJUKodules</title>
+        <title>KajukModules</title>
         <subtitle>User's Guide</subtitle>
         <author>
             <personname>
@@ -32,11 +32,10 @@
     <chapter>
         <title>Overview</title>
         <para>This project contains an importer for the Kasseler Junktionskorpus, see
-                http://www.uni-giessen.de/kajuk/. 
-        </para>
+            http://www.uni-giessen.de/kajuk/. </para>
         <para>The import of the corpus utilizes a mapping to Salt with the use of a SAX-parser. The
             mapping itself includes the conversion from the corpus annotations to a ANNIS-usable
-            token-based setting.</para>
+            token-based setting, which will be explained further in the following chapter.</para>
         
                 
         
@@ -46,38 +45,369 @@
     </chapter>
     <chapter>
         <title>Corpus Properties</title>
-        <para>The KAJUK corpus is segmented into phrases or between conjunctions, thus the text
-                is tokenized using the Salt implementation of the TreeTagger tokenizer. </para>
-        <para>The annotations are realized in nested xml tags, which are not adoptable to Salt [OR
-            ANNIS??], hence a key-value representation of those elements is necessary.</para>
+        <para>The KAJUK corpus is segmented into phrases or between conjunctions, thus the text is
+            tokenized using the Salt implementation of the TreeTagger tokenizer, a small example of
+            the tokenization process can be found below [REFERENCE]. </para>
+        <para>The annotations of the KAJUK corpus are realized in nested SGML tags, which are not
+            adoptable to Salt, hence a key-value representation of those elements is
+            necessary.</para>
+        <section>
+            <title>Conversion Procedure</title>
+            <para>Originally the corpus was available in a SGML format specifically developed for
+                the KAJUK corpus and hence not convertible with existing tools of the Pepper
+                framework. With this basis the following tasks needed to be done for a
+                conversion.</para>
+            <para>
+                <orderedlist>
+                    <listitem>
+                        <para>Transform the SGML format into a XML conform format for further
+                            processing</para>
+                    </listitem>
+                    <listitem>
+                        <para>Tokenization of the KAJUK text.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Development of a Pepper module for the mapping of the KAJUK corpus to
+                            Salt, which leads to inherent exportability to relANNIS, the relational
+                            format of ANNIS) and thereby the ability to map the corpus to a
+                            sustainable format.</para>
+                    </listitem>
+                </orderedlist>
+            </para>
+            <section>
+                <title>Format Transformation </title>
+                <para>The conversion from the SGML format to real XML was straight forward and
+                    required just a few annotation changes.</para>
+            </section>
+            <section>
+                <title>Tokenization</title>
+                <para>ANNIS is token-based (whereas a token can be a word, a sentence or a syllable)
+                    and the KAJUK corpus is originally segmented into phrases. With a simple mapping
+                    to ANNIS it is not possible to search for words. Therefore the text has to be
+                    tokenized with a tokenizer and while the Pepper framework includes an
+                    implementation of the TreeTagger tokenizer it is used for this project.</para>
+                <para>However, there are special cases as in the following
+                    example:<programlisting>&lt;line n="18"/>
+&lt;lb type="subj" n="30">
+    &lt;SUB IR="zero">dass&lt;/SUB>
+    in ihm
+    &lt;subj>das &lt;!--hier line-->unersch&amp;uml;tterte Vertrauen auf jenes principium
+        und das ruhige &lt;!--hier line 19-->Dasitzen des in ihm Befangenen&lt;/subj>
+    &lt;praed>&lt;Phras>seinen erhabensten Ausdruck&lt;/Phras>&lt;/praed>
+    &lt;praed>&lt;V ID="PII">&lt;PV>&lt;!--hier line 20-->bekommen&lt;/PV>&lt;/V>&lt;/praed>
+    &lt;praed>&lt;V ID="Fin">&lt;HV>habe,&lt;/HV>&lt;/V>&lt;/praed>&lt;/lb>
+&lt;line n="21"></programlisting></para>
+                <para>In this example two comments are inserted into the continuous text.
+                    (&lt;!--hier line 19--> and &lt;!--hier line 20-->) With the tokenization those
+                    comments need to be considered as a span-annotation which mark graphical line
+                    breaks in the original text. The same appears for page breaks in some
+                    cases.</para>
+                <para>The processing of the text is not possible with this inconsistency, therefore
+                    some modifications to the text need to be made. The original elements as well as
+                    the comments need to be replaced with a consistent model. The solution are two
+                    new elements added to the text (&lt;newline/> and &lt;newpage/>) </para>
+            </section>
+            <section>
+                <title>Conversion Module</title>
+                <para>In ANNIS linguistic annotations are represented in attribute-value pairs. In
+                    ANNIS it is not possible to use nested annotations in terms of multiple
+                    consecutive annotations.
+                    <programlisting>1 &lt;praed>&lt;V ID="Fin">&lt;MV>must&lt;/MV>&lt;/V>&lt;/praed></programlisting></para>
+                <para>Such annotation need to be mapped to attribute-value pairs in which nested
+                    values can be represented. Another speciality of KAJUK is that the same
+                    informations can be found in the XML-hierarchy in different places.
+                    <programlisting>1 &lt;J IR="adv">&lt;AP type="FOK">aber&lt;/AP>&lt;/J>
+2 &lt;FOK>aber&lt;/FOK></programlisting></para>
+                <para>In this example the information that the word "aber" is a focusparticle "FOK"
+                    is realised by an attribute as well as an element. This is also needed to be
+                    considered in the mapping process. Furthermore the attribute "type=" represents
+                    very different informations along the corpus. </para>
+                <table frame="box" width="730">
+                    <caption>Conversiontable</caption>
+                    <col width="159px"/>
+                    <col width="190px"/>
+                    <col width="21%"/>
+                    <col width="29%"/>
+                    <thead>
+                        <tr>
+                            <th>Annotation</th>
+                            <th>Key-Value Pair</th>
+                            <th>Annotation</th>
+                            <th>Key-Value Pair</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt;!--hier line--></td>
+                            <td>line="n"</td>
+                            <td>&lt;KON></td>
+                            <td>J_type="KON"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;newpage></td>
+                            <td>page="n"</td>
+                            <td>&lt;SUB></td>
+                            <td>J_type="SUB"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb></td>
+                            <td>lb="lb"</td>
+                            <td>&lt;J></td>
+                            <td>J="J"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="kom"></td>
+                            <td>IR_lb="kom"</td>
+                            <td>&lt;J norm="x"></td>
+                            <td>norm="x"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="kond"></td>
+                            <td>IR_lb="kond"</td>
+                            <td>&lt;V ID="x"></td>
+                            <td>pos_ID="x"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb type="subjattr"></td>
+                            <td>type="subattr"</td>
+                            <td>&lt;FOK></td>
+                            <td>pos_KAJUK="FOK"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb type="subj"></td>
+                            <td>type="subj"</td>
+                            <td>type="FOK"</td>
+                            <td>pos_KAJUK="FOK"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb type="WR"></td>
+                            <td>type="WR"</td>
+                            <td>&lt;FV></td>
+                            <td>pos_KAJUK="FV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb ADDtype="WR"></td>
+                            <td>ADDtype="WR"</td>
+                            <td>&lt;HMV></td>
+                            <td>pos_KAJUK="HMV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="fin"></td>
+                            <td>IR="fin"</td>
+                            <td>&lt;HV></td>
+                            <td>pos_KAJUK="HV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="kaus"></td>
+                            <td>IR="kaus"</td>
+                            <td>&lt;Inf></td>
+                            <td>pos_KAJUK="Inf"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="temp"></td>
+                            <td>IR="temp"</td>
+                            <td>&lt;IP></td>
+                            <td>pos_KAJUK="IP"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;lb IR="meta"></td>
+                            <td>IR="meta"</td>
+                            <td>&lt;KOR></td>
+                            <td>pos_KAJUK="KOR"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;J ADDIR="x"></td>
+                            <td>ADDIR="x"</td>
+                            <td>type="KOR"</td>
+                            <td>pos_KAJUK="KOR"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;J EB="prag"></td>
+                            <td>EB="prag"</td>
+                            <td>&lt;KV></td>
+                            <td>pos_KAJUK="KV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;subj type="noE"></td>
+                            <td>type="noE"</td>
+                            <td>&lt;LASSEN></td>
+                            <td>pos_KAJUK="LASSEN"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;J ID="3"></td>
+                            <td>ID="3"</td>
+                            <td>&lt;MV></td>
+                            <td>pos_KAJUK="MV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;J IR="x"></td>
+                            <td>IR="x"</td>
+                            <td>&lt;RF></td>
+                            <td>pos_KAJUK="RF"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;AD></td>
+                            <td>J_type="AD"</td>
+                            <td>&lt;TUN></td>
+                            <td>pos_KAJUK="TUN"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;AP></td>
+                            <td>J_type="AP"</td>
+                            <td>&lt;VP></td>
+                            <td>pos_KAJUK="VP"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;praed real="afin"></td>
+                            <td>real="afin"</td>
+                            <td>&lt;VV></td>
+                            <td>pos_KAJUK="VV"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;subj type="abs"></td>
+                            <td>satzglied_type="abs"</td>
+                            <td>&lt;J type="x"></td>
+                            <td>X="x"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;AcI></td>
+                            <td>satzglied_type="Acl"</td>
+                            <td>&lt;AP ADDtype="x"></td>
+                            <td>X="x"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;ADJGr></td>
+                            <td>satzglied_type="ADJGr"</td>
+                            <td>&lt;XX></td>
+                            <td>X="XX"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;akk></td>
+                            <td>satzglied_type="akk"</td>
+                            <td>&lt;praed dir="R"></td>
+                            <td>dir_E="R"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;NGr></td>
+                            <td>satzglied_type="NGr"</td>
+                            <td>&lt;subj type="E"></td>
+                            <td>E="E"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;obl></td>
+                            <td>satzglied_type="obl"</td>
+                            <td>&lt;SUB IR="zero"></td>
+                            <td>IR_E="zero"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;PGr></td>
+                            <td>satzglied_type="PGr"</td>
+                            <td>&lt;J type="E"></td>
+                            <td>J_E="J"</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;Phras></td>
+                            <td>satzglied_type="Phras"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;prae></td>
+                            <td>satzglied_type="prae"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;PV></td>
+                            <td>satzglied_type="PV"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;ADV></td>
+                            <td>satzglied="ADV"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;obj></td>
+                            <td>satzglied="obj"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;SUB type="subj"></td>
+                            <td>satzglied="subj"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;SUB ADDtype="Eviol"></td>
+                            <td>viol="Eviol"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                        <tr>
+                            <td>&lt;VOR></td>
+                            <td>Vorfeld="VOR"</td>
+                            <td/>
+                            <td/>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </section>
         <section>
             <title>Graphical line and page breaks</title>
-        
-            <para>In the corpus for line breaks an inconsistent method was used, as can be seen in <link
-                xlink:href="https://korpling.german.hu-berlin.de/p/boards/7/topics/59">here</link>.
-            This inconsistency required the introduction of new elements to prevent changing the
-            structure of the corpus. The original <emphasis>line</emphasis>- and
-                <emphasis>pb</emphasis>-elements are ignored during the parsing process as well as
-            the comments, which are (sometimes) used for the line breaks, and replaced with
-                <emphasis>newline</emphasis>- and <emphasis>newpage</emphasis>-elements, also as
-            shown below. These inserted elements </para>
-            <para><inlinemediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/annotationExample.png"/>
-                    </imageobject>
-                </inlinemediaobject></para>
+            <para>In the corpus for line breaks an inconsistent method was used, as can be seen in
+                    <link xlink:href="https://korpling.german.hu-berlin.de/p/boards/7/topics/59"
+                    >here</link>. This inconsistency required the introduction of new elements to
+                prevent changing the structure of the corpus. The original
+                <emphasis>line</emphasis>- and <emphasis>pb</emphasis>-elements are ignored during
+                the parsing process as well as the comments, which are (sometimes) used for the line
+                breaks, and replaced with <emphasis>newline</emphasis>- and
+                    <emphasis>newpage</emphasis>-elements, also as shown below. These inserted
+                elements can then be used to
+                <programlisting> 1 &lt;pb n="38">
+ 2     &lt;line n="1">
+ 3         &lt;lb>
+ 4             &lt;VOR>Im Jahr 1640 umb das Neue Jahr da&lt;/VOR>
+ 5             &lt;praed>
+ 6                 &lt;V ID="Fin">&lt;VV>kamen&lt;/VV>&lt;/V>
+ 7             &lt;/praed> in das darmstaedische Land &lt;subj>eine Armate schwedisch
+ 8         Volk.&lt;/subj>&lt;/lb>&lt;newline>&lt;/newline>
+ 9     &lt;/line>
+10 &lt;/pb></programlisting></para>
         </section>
         <section>
             <title>Ellipsis</title>
-            <para>An example for an ellipsis can be seen in the following example.
-                <inlinemediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/ellipsisExample.png"/>
-                    </imageobject>
-                </inlinemediaobject></para>
+            <para>An example for an ellipsis can be seen in the following
+                example.<programlisting>1 &lt;subj type="E" dir="V" change="indef-def,MF-VF">der Hertzog von Weinmar&lt;/subj></programlisting></para>
             <para>The ellipsis of the corpus are identified by specific attributes of elements and
                 as a result, because of the decision of keeping the elliptic text in the main text,
-                the token annotations receive. </para>
+                the token annotations receive the extension "_E" (see table above) as well as the
+                special annotation <emphasis>E="E"</emphasis>. With this every ellipsis can be
+                identified with its context in ANNIS.</para>
+        </section>
+        <section>
+            <title>Junctions</title>
+            <para>Junctions are identified by housenumbers in the actual format. With this phrases
+                are combined into &lt;lb> elements, so-called "Sachverhaltsdarstellungen". Phrases
+                that belong to the same junctionbond receive the same housenumber. The correspondend
+                sentential connective, which combines both phrases to such a bond, is contained in
+                both phrases. This relationship is the core of the corpus and has to be converted
+                into ANNIS. </para>
+            <para>For this the tokens are combined into one unit (the spans), which itself can be
+                annotated with the housenumbers they receive. The relation between phrases can be
+                realised in Salt and ANNIS using the concept of pointing relations. With pointing
+                relations phrases can be connected and then be further annotated, e.g. with the kind
+                of the sentential connective like 'KON'. </para>
+            <para>In the end the junctions are realised with spans for each &lt;lb> element, which
+                are connected via pointing relations for each house number. In doing so the
+                connections are placed consecutive with the appearance of house numbers. For example
+                the spans with the housenumber &lt;lb n="1003"> are connected cocnsecutively, which
+                means the first appearance is connected to the second and the second to the third.
+            </para>
         </section>
     </chapter>
     <chapter>
@@ -171,7 +501,7 @@
         <section>
             <title>Missing features</title>
             <para>There are some things, that are not covered by the importer module, but had to be
-                manipulated by hand for the Laudation integration:<orderedlist>
+                manipulated by hand for the Laudatio integration:<orderedlist>
                     <listitem>
                         <para>The metadata of the documents is not part of the importer itself,
                             instead there is a separate file with the information</para>
@@ -182,11 +512,5 @@
                     </listitem>
                 </orderedlist></para>
         </section>
-    </chapter>
-    <chapter>
-        <title>Conversion</title>
-        <para>The conversion of the annotation elements in the corpus to the key-value pairs can be
-            found <link xlink:href="https://korpling.german.hu-berlin.de/p/documents/145"
-                >here</link>. </para>
     </chapter>
 </book>
