@@ -32,7 +32,8 @@
     <chapter>
         <title>Overview</title>
         <para>This project contains an importer for the Kasseler Junktionskorpus, see
-            http://www.uni-giessen.de/kajuk/. </para>
+            http://www.uni-giessen.de/kajuk/. With this importer the corpus can be mapped to Salt
+            and processed further.</para>
         <para>The import of the corpus utilizes a mapping to Salt with the use of a SAX-parser. The
             mapping itself includes the conversion from the corpus annotations to a ANNIS-usable
             token-based setting, which will be explained further in the following chapter.</para>
@@ -47,7 +48,7 @@
         <title>Corpus Properties</title>
         <para>The KAJUK corpus is segmented into phrases or between conjunctions, thus the text is
             tokenized using the Salt implementation of the TreeTagger tokenizer, a small example of
-            the tokenization process can be found below [REFERENCE]. </para>
+            the tokenization process can be found below. </para>
         <para>The annotations of the KAJUK corpus are realized in nested SGML tags, which are not
             adoptable to Salt, hence a key-value representation of those elements is
             necessary.</para>
@@ -76,8 +77,9 @@
             </para>
             <section>
                 <title>Format Transformation </title>
-                <para>The conversion from the SGML format to real XML was straight forward and
-                    required just a few annotation changes.</para>
+                <para>The conversion from the SGML format to real XML is a straight forward process
+                    and requires just a few annotation changes, but without these changes no
+                    standardized processing can be performed.</para>
             </section>
             <section>
                 <title>Tokenization</title>
@@ -85,7 +87,25 @@
                     and the KAJUK corpus is originally segmented into phrases. With a simple mapping
                     to ANNIS it is not possible to search for words. Therefore the text has to be
                     tokenized with a tokenizer and while the Pepper framework includes an
-                    implementation of the TreeTagger tokenizer it is used for this project.</para>
+                    implementation of the TreeTagger tokenizer it is used for this project. </para>
+                <para>Let's show a simple example for tokenizing the
+                    corpus:<programlisting>1  &lt;line n="1">
+2  			&lt;lb>
+3  				&lt;VOR>Im Jahr 1640 umb das Neue Jahr da&lt;/VOR>
+4  				&lt;praed>
+5  					&lt;V ID="Fin">&lt;VV>kamen&lt;/VV>&lt;/V>
+6  				&lt;/praed> in das darmstädische Land &lt;subj>eine Armate schwedisch
+7  			Volk.&lt;/subj>&lt;/lb>&lt;newline>&lt;/newline>
+8  		&lt;/line></programlisting></para>
+                <para>When tokenizing the above text, the elements are ignored and tokens for the
+                    non-elements are created. Accordingly following tokens would be
+                    created:<programlisting>TOK1 = Im
+TOK2 = Jahr
+TOK3 = 1640
+TOK4 = umb
+TOK5 = ...</programlisting></para>
+                <para>In a later processing step, these tokens receive annotations, as will be shown
+                    in section 2.1.3.</para>
                 <para>However, there are special cases as in the following
                     example:<programlisting>&lt;line n="18"/>
 &lt;lb type="subj" n="30">
@@ -102,10 +122,19 @@
                     comments need to be considered as a span-annotation which mark graphical line
                     breaks in the original text. The same appears for page breaks in some
                     cases.</para>
+                <para>However, there is a problem with this kind of annotation. As mentioned, there
+                    are two ways of representing a graphical line break. As in the example above,
+                    there are two &lt;line> elements and three comments, whereas one comment does
+                    not show the actual line. There are two ways of interpreting a &lt;line> element
+                    and a line break comment. Either they mean that the actual break happens at that
+                    position and the mentioned line starts there, or the mentioned line ends there.
+                    There are examples, where it is not clear which one it is as well as the
+                    situation that it is clear, but the meaning alternates. </para>
                 <para>The processing of the text is not possible with this inconsistency, therefore
-                    some modifications to the text need to be made. The original elements as well as
-                    the comments need to be replaced with a consistent model. The solution are two
-                    new elements added to the text (&lt;newline/> and &lt;newpage/>) </para>
+                    some modifications to the text need to be made. For representing graphical line
+                    breaks, the original elements as well as the comments need to be replaced with a
+                    consistent model. The solution are two new elements added to the text
+                    (&lt;newline/> and &lt;newpage/>). </para>
             </section>
             <section>
                 <title>Conversion Module</title>
@@ -114,20 +143,32 @@
                     consecutive annotations.
                     <programlisting>1 &lt;praed>&lt;V ID="Fin">&lt;MV>must&lt;/MV>&lt;/V>&lt;/praed></programlisting></para>
                 <para>Such annotation need to be mapped to attribute-value pairs in which nested
-                    values can be represented. Another speciality of KAJUK is that the same
-                    informations can be found in the XML-hierarchy in different places.
+                    values can be represented. The solution for that is a variety of key-value pairs
+                        <emphasis>attached</emphasis> to the
+                    tokens:<programlisting>1  ID = "Fin"
+2  pos_KAJUK = "MV"
+3  satzglied = "praed"
+4  satzglied_type = "V"</programlisting></para>
+                <para>These key-value pairs are then connected with the token
+                        <emphasis>must</emphasis>, hence this token can be found via search queries
+                    that look for any of the pairs, e.g. a query for all tokens with the pair
+                        <emphasis>ID="Fin"</emphasis> returns amongst others the token
+                        <emphasis>must</emphasis>. A complete list of element to key-value
+                    conversion can be found below.</para>
+                <para>Another speciality of KAJUK is that the same informations can be found in the
+                    XML-hierarchy in different places.
                     <programlisting>1 &lt;J IR="adv">&lt;AP type="FOK">aber&lt;/AP>&lt;/J>
 2 &lt;FOK>aber&lt;/FOK></programlisting></para>
                 <para>In this example the information that the word "aber" is a focusparticle "FOK"
                     is realised by an attribute as well as an element. This is also needed to be
                     considered in the mapping process. Furthermore the attribute "type=" represents
                     very different informations along the corpus. </para>
-                <table frame="box" width="730">
+                <table frame="box" width="656">
                     <caption>Conversiontable</caption>
                     <col width="159px"/>
                     <col width="190px"/>
-                    <col width="21%"/>
-                    <col width="29%"/>
+                    <col width="135px"/>
+                    <col width="178px"/>
                     <thead>
                         <tr>
                             <th>Annotation</th>
@@ -308,86 +349,76 @@
                         <tr>
                             <td>&lt;Phras></td>
                             <td>satzglied_type="Phras"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;SUB ADDtype="E"></td>
+                            <td>J_type_E="SUB"</td>
                         </tr>
                         <tr>
                             <td>&lt;prae></td>
                             <td>satzglied_type="prae"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;obj change="gen-nom"></td>
+                            <td>change="gen-nom"</td>
                         </tr>
                         <tr>
                             <td>&lt;PV></td>
                             <td>satzglied_type="PV"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;obl></td>
+                            <td>satzglied_type="obl"</td>
                         </tr>
                         <tr>
                             <td>&lt;ADV></td>
                             <td>satzglied="ADV"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;AD></td>
+                            <td>J_type="AD"</td>
                         </tr>
                         <tr>
                             <td>&lt;obj></td>
                             <td>satzglied="obj"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;praed real="afin"></td>
+                            <td>real="afin"</td>
                         </tr>
                         <tr>
                             <td>&lt;SUB type="subj"></td>
                             <td>satzglied="subj"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;praed norm="und"></td>
+                            <td>norm="und"</td>
                         </tr>
                         <tr>
                             <td>&lt;SUB ADDtype="Eviol"></td>
                             <td>viol="Eviol"</td>
-                            <td/>
-                            <td/>
+                            <td>&lt;TUN></td>
+                            <td>satzglied_type="TUN"</td>
                         </tr>
                         <tr>
                             <td>&lt;VOR></td>
                             <td>Vorfeld="VOR"</td>
-                            <td/>
-                            <td/>
                         </tr>
                     </tbody>
                 </table>
             </section>
         </section>
         <section>
-            <title>Graphical line and page breaks</title>
-            <para>In the corpus for line breaks an inconsistent method was used, as can be seen in
-                    <link xlink:href="https://korpling.german.hu-berlin.de/p/boards/7/topics/59"
-                    >here</link>. This inconsistency required the introduction of new elements to
-                prevent changing the structure of the corpus. The original
-                <emphasis>line</emphasis>- and <emphasis>pb</emphasis>-elements are ignored during
-                the parsing process as well as the comments, which are (sometimes) used for the line
-                breaks, and replaced with <emphasis>newline</emphasis>- and
-                    <emphasis>newpage</emphasis>-elements, also as shown below. These inserted
-                elements can then be used to
-                <programlisting> 1 &lt;pb n="38">
- 2     &lt;line n="1">
- 3         &lt;lb>
- 4             &lt;VOR>Im Jahr 1640 umb das Neue Jahr da&lt;/VOR>
- 5             &lt;praed>
- 6                 &lt;V ID="Fin">&lt;VV>kamen&lt;/VV>&lt;/V>
- 7             &lt;/praed> in das darmstaedische Land &lt;subj>eine Armate schwedisch
- 8         Volk.&lt;/subj>&lt;/lb>&lt;newline>&lt;/newline>
- 9     &lt;/line>
-10 &lt;/pb></programlisting></para>
-        </section>
-        <section>
             <title>Ellipsis</title>
             <para>An example for an ellipsis can be seen in the following
-                example.<programlisting>1 &lt;subj type="E" dir="V" change="indef-def,MF-VF">der Hertzog von Weinmar&lt;/subj></programlisting></para>
+                listing.<programlisting>1  &lt;lb n="1,3000,2000">
+2      &lt;subj type="E" dir="V" change="indef-def,MF-VF">der Hertzog von Weinmar&lt;/subj>
+3  	&lt;praed>
+4      	&lt;V ID="Fin">&lt;KV>War&lt;/KV>&lt;/V>
+5      &lt;/praed>&lt;newline>&lt;/newline>
+6  	&lt;J IR="adv">
+7 		&lt;AP>aber&lt;/AP>
+8  	&lt;/J>
+9  	&lt;praed>
+10 		&lt;V ID="PII">&lt;VV>gestorben&lt;/VV>&lt;/V>
+11 	&lt;/praed>
+12 &lt;/lb></programlisting></para>
+            <para>The example shows the ellipsis <emphasis>der Hertzog von Weinmar</emphasis>, which
+                is not part of the main text but in the process of conversion treated as normal
+                text. Simply the created key-value pairs for the ellipsis do make them special.  </para>
             <para>The ellipsis of the corpus are identified by specific attributes of elements and
                 as a result, because of the decision of keeping the elliptic text in the main text,
                 the token annotations receive the extension "_E" (see table above) as well as the
                 special annotation <emphasis>E="E"</emphasis>. With this every ellipsis can be
-                identified with its context in ANNIS.</para>
+                identified with its context in Salt as well as in ANNIS.</para>
         </section>
         <section>
             <title>Junctions</title>
@@ -445,8 +476,7 @@
                             <emphasis>line</emphasis>-elements completely</para>
                     </listitem>
                     <listitem>
-                        <para>Determine multi-level <emphasis>lb</emphasis>-elements, see
-                            [REFERENCE]</para>
+                        <para>Determine multi-level <emphasis>lb</emphasis>-elements</para>
                     </listitem>
                     <listitem>
                         <para>Creating SSpans for <emphasis>newline</emphasis>- and
@@ -454,8 +484,8 @@
                     </listitem>
                     <listitem>
                         <para>The key-value pair(s) for the opened element and it's attributes is
-                            created, see [REFERENCE TO CONVERSION]. The conversion class created for
-                            this purpose simply defines the SAnnotation accordingly</para>
+                            created, see chapter 2.1.3. The conversion class created for this
+                            purpose simply defines the SAnnotation accordingly</para>
                     </listitem>
                     <listitem>
                         <para>The information about the opened element is saved</para>
@@ -480,7 +510,7 @@
                     </listitem>
                     <listitem>
                         <para>For every house number the closed element may contain, a SSpan is
-                            created and saved for later use, see [REFERENCE TO HOUSE NUMBERS]</para>
+                            created and saved for later use</para>
                     </listitem>
                     <listitem>
                         <para>The STokens and SSpans created are connected with
