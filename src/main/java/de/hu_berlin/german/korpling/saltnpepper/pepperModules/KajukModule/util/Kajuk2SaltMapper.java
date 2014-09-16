@@ -25,13 +25,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.osgi.service.log.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.MAPPING_RESULT;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperMapperImpl;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.common.DOCUMENT_STATUS;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperMapperImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.exceptions.KajukImporterException;
 import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 
@@ -39,7 +40,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.SaltFactory;
 
 public class Kajuk2SaltMapper extends PepperMapperImpl
 {
-	
+	private static final Logger logger= LoggerFactory.getLogger(Kajuk2SaltMapper.class); 
 	public static final String UTF8_BOM = "\uFEFF";
 	
 	/**
@@ -48,7 +49,7 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 	 * OVERRIDE THIS METHOD FOR CUSTOMIZED MAPPING.
 	 */
 	@Override
-	public MAPPING_RESULT mapSDocument() {	
+	public DOCUMENT_STATUS mapSDocument() {	
 		getSDocument().setSName(getSDocument().getSName());
 		
 		if (getSDocument().getSDocumentGraph()== null)
@@ -64,7 +65,7 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 			{	
 				parser= factory.newSAXParser();
 				xmlReader = parser.getXMLReader();
-				xmlReader.setContentHandler(new KajukContentHandler(getSDocument(),this.getLogService()));
+				xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
 			}
 			catch(ParserConfigurationException e)
 			{
@@ -91,7 +92,7 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 				{
 					parser= factory.newSAXParser();
 					xmlReader= parser.getXMLReader();
-					xmlReader.setContentHandler(new KajukContentHandler(getSDocument(), getLogService()));
+					xmlReader.setContentHandler(new KajukContentHandler(getSDocument()));
 					xmlReader.parse(file.getAbsolutePath());
 				}
 				catch (Exception e1) 
@@ -99,12 +100,12 @@ public class Kajuk2SaltMapper extends PepperMapperImpl
 		             throw new KajukImporterException("Cannot load Kajuk from resource '"+file.getAbsolutePath()+"'.", e1);
 				}
 			}
-			getLogService().log(LogService.LOG_DEBUG, "SDocument '"+ getSDocument().getSName()+"' processed");
+			logger.debug("SDocument '"+ getSDocument().getSName()+"' processed");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return(MAPPING_RESULT.FINISHED);
+		return(DOCUMENT_STATUS.COMPLETED);
 	}
 }

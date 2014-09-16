@@ -15,14 +15,16 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util;
 
-import org.osgi.service.log.LogService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SAbstractAnnotation;
 
 public abstract class ConversionClass {
-
+	private static final Logger logger= LoggerFactory.getLogger(ConversionClass.class);
 	
-	public static void convert(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue, LogService logService)
+	public static void convert(SAbstractAnnotation sAnno, String elementName, String attrName, String attrValue)
 	{
 		if(attrName == null || attrValue == null)
 		{
@@ -294,7 +296,7 @@ public abstract class ConversionClass {
 			}
 			else
 			{
-				logService.log(LogService.LOG_WARNING, "Unknown tag without attributes ("+elementName+")");
+				logger.warn("Unknown tag without attributes ("+elementName+")");
 			}
 		}
 		else
@@ -350,7 +352,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("AP"))
 			{
@@ -379,7 +381,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("praed"))
 			{
@@ -408,7 +410,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("VOR"))
 			{
@@ -437,7 +439,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("SUB"))
 			{
@@ -496,7 +498,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("obj"))
 			{
@@ -519,7 +521,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("V"))
 			{
@@ -548,7 +550,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("KOR"))
 			{
@@ -589,7 +591,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("FOK"))
 			{
@@ -612,7 +614,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("KON"))
 			{
@@ -629,7 +631,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else 
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("VV"))
 			{
@@ -676,7 +678,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("HV"))
 			{
@@ -747,7 +749,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("XX"))
 			{
@@ -776,7 +778,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("ADV"))
 			{
@@ -799,7 +801,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("IP"))
 			{
@@ -816,7 +818,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("newline"))
 			{
@@ -827,7 +829,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("newpage"))
 			{
@@ -838,7 +840,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("RF"))
 			{
@@ -854,7 +856,7 @@ public abstract class ConversionClass {
 					sAnno.setValue(attrValue);
 					return;
 				}
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals(""))
 			{
@@ -865,7 +867,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("Inf"))
 			{
@@ -882,7 +884,7 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else if(elementName.equals("AD"))
 			{
@@ -899,11 +901,11 @@ public abstract class ConversionClass {
 					return;
 				}
 				else
-					logService.log(LogService.LOG_WARNING, "No handler for "+ elementName+"_"+attrName);
+					logger.warn("No handler for "+ elementName+"_"+attrName);
 			}
 			else
 			{
-				logService.log(LogService.LOG_WARNING, "Unknown tag with attributes ("+elementName+")");
+				logger.warn("Unknown tag with attributes ("+elementName+")");
 			}
 		}
 	}

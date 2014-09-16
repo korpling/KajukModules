@@ -24,7 +24,8 @@ import java.util.Vector;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
-import org.osgi.service.log.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -55,7 +56,7 @@ import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SLayer;
  */
 public class KajukContentHandler extends DefaultHandler2 implements ContentHandler 
 {
-
+	private static final Logger logger= LoggerFactory.getLogger(KajukContentHandler.class);
 	private static final String SPAN_ANNO=
 			"doc,newline,newpage,lb";
 	
@@ -89,14 +90,11 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 	private SLayer graphische_annotationen;
 	private SLayer hilfsannotationen;
 
-	private LogService logService;
-	
 	// this is the hashmap for the annotations 
 	private HashMap<String, EList<SAbstractAnnotation>> annotationMap;
 	
-	public KajukContentHandler(SDocument sDocument, LogService logService)
+	public KajukContentHandler(SDocument sDocument)
 	{
-		this.logService = logService;
 		this.sDocument = sDocument;
 		this.currentXPath = new XPathExpression();
 		this.currentSDS = SaltFactory.eINSTANCE.createSTextualDS();
@@ -228,7 +226,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 				this.annotationMap.put("lb_"+this.multiLevelLb, h_createSAbstractAnnotations(qName, attributes));
 			}
 			else
-				this.logService.log(LogService.LOG_WARNING, qName + " already in AnnotationMap, should not be there.. ");
+				logger.warn(qName + " already in AnnotationMap, should not be there.. ");
 		}
 		else
 		{
@@ -281,7 +279,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 				else // this is the case if it is the first newline element evah
 				{
 					this.openSpans.put(qName, new LinkedList<SToken>());
-					this.logService.log(LogService.LOG_DEBUG, "put "+qName+" to openSpans");
+					logger.debug("put "+qName+" to openSpans");
 				}
 				for(int i = 0; i<=attributes.getLength(); i++)
 				{
@@ -433,7 +431,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 			}
 			else
 			{
-				this.logService.log(LogService.LOG_WARNING, qName + " was already removed or never in the annotationMap");
+				logger.warn(qName + " was already removed or never in the annotationMap");
 			}
 
 	}
@@ -484,12 +482,12 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 			{
 				if(i == attributes.getLength())
 				{
-					ConversionClass.convert(sAnno, qName, null, null, this.logService);
+					ConversionClass.convert(sAnno, qName, null, null);
 				}
 				else
-					ConversionClass.convert(sAnno, qName, attributes.getQName(i),attributes.getValue(i), this.logService);
+					ConversionClass.convert(sAnno, qName, attributes.getQName(i),attributes.getValue(i));
 				if(sAnno.getSName() == null && !qName.equals("doc") && !qName.equals("newline") && !qName.equals("newpage") && !qName.equals("line") && !qName.equals("pb"))
-					this.logService.log(LogService.LOG_WARNING, "sAnno still null - qName = " + qName);
+					logger.warn("sAnno still null - qName = " + qName);
 				else
 				{
 					annoList.add(sAnno);
@@ -568,7 +566,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 					SPointingRelation sPointingRelation = SaltFactory.eINSTANCE.createSPointingRelation();
 					sPointingRelation.setSSource(span);
 					sPointingRelation.setSTarget(this.houseNumbers.get(str).get(index));
-					this.logService.log(LogService.LOG_DEBUG, "connecting "+span.getIdentifier().getId() + " with " + this.houseNumbers.get(str).get(index).getIdentifier().getValueString()+"\n"+str );
+					logger.debug("connecting "+span.getIdentifier().getId() + " with " + this.houseNumbers.get(str).get(index).getIdentifier().getValueString()+"\n"+str );
 					sDocument.getSDocumentGraph().addSRelation(sPointingRelation);
 					String type = "";
 					int ret;
@@ -587,7 +585,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 					if(!type.equals(""))
 						sPointingRelation.addSType(type);	
 					else
-						this.logService.log(LogService.LOG_WARNING, "House number type is wrong!");
+						logger.warn("House number type is wrong!");
 				}
 			}
 		}
@@ -617,7 +615,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 				if(!type.equals(""))
 					sPointingRelation.addSType(type);	
 				else
-					this.logService.log(LogService.LOG_WARNING, "House number type is wrong!");
+					logger.warn("House number type is wrong!");
 			}
 		}
 		sDocument.setSDocumentGraph(sDocumentGraph);

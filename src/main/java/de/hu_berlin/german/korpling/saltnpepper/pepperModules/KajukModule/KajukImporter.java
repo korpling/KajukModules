@@ -19,9 +19,9 @@ package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule;
 
 import org.osgi.service.component.annotations.Component;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperImporter;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.PepperMapper;
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperModules.impl.PepperImporterImpl;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperImporter;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperMapper;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.impl.PepperImporterImpl;
 import de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.util.Kajuk2SaltMapper;
 import de.hu_berlin.german.korpling.saltnpepper.salt.saltCore.SElementId;
 
@@ -32,7 +32,7 @@ public class KajukImporter extends PepperImporterImpl implements PepperImporter
 	{
 		super();
 		//setting name of module
-		this.name= "KajukImporter";
+		setName("KajukImporter");
 		//set list of formats supported by this module
 		this.addSupportedFormat("KAJUK", "1.1", null);
 		getSDocumentEndings().add(PepperImporter.ENDING_ALL_FILES);

@@ -17,7 +17,7 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule.exceptions;
 
-import de.hu_berlin.german.korpling.saltnpepper.pepper.pepperExceptions.PepperModuleException;
+import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.exceptions.PepperModuleException;
 
 public class KajukImporterException extends PepperModuleException
 {
