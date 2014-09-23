@@ -158,22 +158,29 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 		{
 			textBuf = new StringBuffer();
 			String containedText = currentSDS.getSText();
-			if(containedText != null)	// if not empty, the STextualDS is the first part of the contained text
+			if(containedText != null){	// if not empty, the STextualDS is the first part of the contained text
 				textBuf.append(removeControlCharacters(containedText));
+				if (readElement){
+					textBuf.append(" ");
+					readElement= false;
+				}
+			}
 			int sStart = textBuf.toString().trim().length();
-			textBuf.append(removeControlCharacters(text)+" ");
-			currentSDS.setSText(textBuf.toString());
-			int sEnd = textBuf.toString().trim().length();
 			
+			textBuf.append(removeControlCharacters(text));
+			textBuf.append(" ");
+			
+			currentSDS.setSText(textBuf.toString());
+			
+			int sEnd = textBuf.toString().trim().length();
 			String check = removeControlCharacters(currentSDS.getSText().substring(sStart, sEnd));
 			
 			if(!check.equals(""))
 			{
+				check= check +" ";
 				if(this.openToken != null && this.openToken.peek() != null)
 				{
 					EList<SToken> tokenized = null;
-					STextualDS retSTextualDS = SaltFactory.eINSTANCE.createSTextualDS();;
-					retSTextualDS.setSText(check);
 					this.tokenizer.setsDocumentGraph(this.sDocumentGraph);
 					tokenized = this.tokenizer.tokenize(this.currentSDS, LanguageCode.de, sStart, sEnd);
 					for(SToken sToken : tokenized)
@@ -198,7 +205,8 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 			}
 		}
 	}
-	
+	/** flag to determine if the start or end of an element was read, this is for method {@link #characters(char[], int, int)} to know, when to add a blank after a token**/
+	boolean readElement= false;
 	/**
 	 * Evaluates the elements of the xml file according to the corpus structure. The main focus lies on putting 
 	 * the opened tags onto a stack for later use, depending on the tagname itself. 
@@ -212,6 +220,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 								Attributes attributes) 
 			throws SAXException 
 	{
+		readElement= true;
 		// we ignore those, because we replaced them with newline and newpage
 		if(qName.equals("pb") || qName.equals("line"))
 			return;
@@ -342,6 +351,7 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 							String qName)
 			throws SAXException 
 	{
+			readElement= true;
 			if(this.stringBuilder!=null && this.stringBuilder.toString().length() > 0)
 			{
 				this.stringBuilder.toString();
@@ -447,8 +457,8 @@ public class KajukContentHandler extends DefaultHandler2 implements ContentHandl
 			if(text.contains("\t"))text = text.replace("\t","");
 			if(text.contains("\f"))text = text.replace("\f","");
 			if(text.contains("\b"))text = text.replace("\b","");
-			// replace all multi-whitespaces with single whitespaces
 			text.replaceAll("\\p{Cntrl}", "");
+			// replace all multi-whitespaces with single whitespaces
 			text = text.trim().replaceAll(" +", " ");
 		}
 		return text;
