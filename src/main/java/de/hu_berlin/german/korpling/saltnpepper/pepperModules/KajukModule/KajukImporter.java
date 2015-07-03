@@ -17,6 +17,7 @@
  */
 package de.hu_berlin.german.korpling.saltnpepper.pepperModules.KajukModule;
 
+import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
 
 import de.hu_berlin.german.korpling.saltnpepper.pepper.modules.PepperImporter;
@@ -33,6 +34,10 @@ public class KajukImporter extends PepperImporterImpl implements PepperImporter
 		super();
 		//setting name of module
 		setName("KajukImporter");
+		setSupplierContact(URI.createURI("saltnpepper@lists.hu-berlin.de"));
+		setSupplierHomepage(URI.createURI("https://github.com/korpling/pepperModules-KajukModules"));
+		setDesc("This importer is written to import the Kajuk Korpus and to map it to a Salt model. ");
+
 		//set list of formats supported by this module
 		this.addSupportedFormat("KAJUK", "1.1", null);
 		getSDocumentEndings().add(PepperImporter.ENDING_ALL_FILES);
